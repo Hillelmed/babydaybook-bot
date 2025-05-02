@@ -9,8 +9,8 @@ A simple bot for tracking baby care activities via Telegram (and optionally What
 * **Today's Feedings** (`/totalEatToday`): lists all feedings today (HH\:mm = amount) and total volume.
 * **Record Diaper** (`/diaper <pee|poop> [HH:mm]`): log diaper change with optional time.
 * **Record Medication** (`/med <name> [dosage] [HH:mm]`): log medication with optional dosage and time.
-* **Today's Diapers** (`/totalDiaperToday`): lists and counts diaper changes today.
-* **Today's Medications** (`/totalMedToday`): lists and counts medications today.
+* **Today's Diapers** (`/totalDiaperToday`): lists and counts diaper changes today with times.
+* **Today's Medications** (`/totalMedToday`): lists and counts medications today with times and dosages.
 * **Input Validation**: central pre-check for required parameters, with usage hints.
 * **Automatic Reminder**: every minute, if ≥2.5h passed since last feeding, sends reminder.
 * **Docker Compose** setup with Node.js and MongoDB.
@@ -45,32 +45,67 @@ TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 ```
 
-## Quick Start (Docker)
+## Quick Start: Docker
 
-1. Build and run with Docker Compose:
+Build and run with Docker Compose:
 
-   ```bash
-   docker-compose up -d
+```bash
+docker-compose up -d
+```
+
+The app listens on **port 3000**.
+
+## Quick Start: Local
+
+Install dependencies and start locally:
+
+```bash
+npm install
+npm start
+```
+
+Adjust `.env` accordingly.
+
+## Quick Start: Telegram Setup
+
+1. **Create the Bot**
+
+   * Open Telegram, search for **@BotFather**.
+   * Send `/newbot`, follow prompts: choose a name and a username (must end in “bot”).
+   * Copy the HTTP API token and set `TELEGRAM_BOT_TOKEN` in `.env`.
+
+2. **Create a Group**
+
+   * In Telegram, tap “New Group”.
+   * Add your parents and caregivers.
+   * Add your bot by searching its username, e.g. `@YourBotUsername`.
+
+3. **Configure Bot Privacy**
+
+   * In BotFather send `/mybots`, select your bot → Bot Settings → Group Privacy → Disable.
+   * This allows the bot to see all group messages, not just commands prefixed with `/`.
+
+4. **Use Commands in the Group**
+
+   * Send `/eat 200` or other commands directly in the group chat.
+   * All participants can log events seamlessly.
+
+## Quick Start: WhatsApp Integration (Optional)
+
+1. Sign up at [Twilio](https://twilio.com) and activate the WhatsApp Sandbox.
+2. Add credentials to `.env`:
+
    ```
-2. The app listens on **port 3000**. Connect your Telegram bot to it; for WhatsApp, expose webhook (e.g. via ngrok) and configure Twilio sandbox.
-
-## Quick Start (Local)
-
-1. Install dependencies:
-
-   ```bash
-   npm install
+   TWILIO_ACCOUNT_SID=...
+   TWILIO_AUTH_TOKEN=...
+   TWILIO_WHATSAPP_NUMBER=whatsapp:+1XXX
    ```
-2. Set environment variables in `.env`.
-3. Run the server:
-
-   ```bash
-   npm start
-   ```
+3. Expose your server (`ngrok http 3000`) and set the webhook URL (`https://<your-domain>/whatsapp`) in Twilio sandbox.
+4. Users join by messaging `join <CODE>` to the sandbox number.
 
 ## Usage (Telegram)
 
-Open a chat (or group) with your bot and send commands:
+Open your Telegram group and use:
 
 | Command                        | Description                                   |                    |
 | ------------------------------ | --------------------------------------------- | ------------------ |
@@ -82,20 +117,6 @@ Open a chat (or group) with your bot and send commands:
 | `/totalDiaperToday`            | List & count diaper changes today.            |                    |
 | `/totalMedToday`               | List & count medications today.               |                    |
 | `/help`                        | Show usage instructions.                      |                    |
-
-## WhatsApp Integration (Optional)
-
-1. Sign up at [Twilio](https://twilio.com) and access the WhatsApp Sandbox.
-2. Add your credentials to `.env`:
-
-   ```ini
-   TWILIO_ACCOUNT_SID=...
-   TWILIO_AUTH_TOKEN=...
-   TWILIO_WHATSAPP_NUMBER=whatsapp:+1XXX
-   ```
-3. Expose your server to the internet (e.g., `ngrok http 3000`).
-4. In Twilio Console ► **Sandbox Settings**, set the webhook URL `https://<your-domain>/whatsapp`.
-5. Users join by messaging `join <CODE>` to the sandbox number.
 
 ## Implementation Details
 
@@ -115,4 +136,4 @@ Open a chat (or group) with your bot and send commands:
 
 ---
 
-Enjoy! Feel free to open issues or suggest improvements.
+Feel free to open issues or suggest improvements!
